@@ -11,6 +11,23 @@ import os
 from typing import NamedTuple
 
 class GUSparams(NamedTuple):
+    """
+    Parameters for analysis of GUS data
+
+    Args:
+        NamedTuple (str): 
+            data_dir : Local directory to save data
+            img_dir : Local directory to save images
+            url : GUS data file URL
+            zipfile : 
+            zipfile_path : 
+            zip_dir : str
+            file_prefix : str
+            file_prefix_terminal : str 
+            file_suffix : str
+            libreoffice_cmd : str
+
+    """
     data_dir : str
     img_dir : str
     url : str
