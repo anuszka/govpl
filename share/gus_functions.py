@@ -22,53 +22,57 @@ class GUSparams(NamedTuple):
     file_suffix : str
     libreoffice_cmd : str
 
-def download_if_no_zipfile(params : GUSparams):
-    if not os.path.isfile(params.zipfile_path):
-        print('Downloading file: ' + params.url)
-        getfile(params.url,params.zipfile_path)
-    else:
-        print(params.zipfile_path + ' exists, so not downloaded')
-    return    
-    
-def unzip_if_not_unzipped(params : GUSparams):    
-    if not glob.glob(os.sep.join([params.zip_dir, '*.xlsx'])) and not glob.glob(os.sep.join([params.zip_dir, '*.xls'])):
-        print('Unzipping file: ' + params.zipfile)
-        unzip(params.data_dir,params.zipfile)
-    else:
-        print('*.xlsx or *.xls files exist in ' + params.zip_dir + ', so zip file not extracted')
-    return
+class Analysis:
 
-def convert_to_xls_if_not_converted(params : GUSparams):    
-    if not glob.glob(os.sep.join([params.zip_dir, '*.xls'])):
-        print('Converting *.xlsx to *.xls')
-        for year in range(2000,2022):
-            file = params.file_prefix_terminal + str(year) + params.file_suffix
-            xlsx2xls(params.zip_dir,file, params.libreoffice_cmd, inplace = True)
-    else:
-        print('*.xls files exist in ' + params.zip_dir + ', so *.xlsx files not converted to *.xls')
-    return
+    params : GUSparams
 
-def download_unzip_convert_to_xls(params : GUSparams):
-    download_if_no_zipfile(params)
-    unzip_if_not_unzipped(params)
-    convert_to_xls_if_not_converted(params)
-    return
+    def download_if_no_zipfile(self):
+        if not os.path.isfile(self.params.zipfile_path):
+            print('Downloading file: ' + self.params.url)
+            getfile(self.params.url,self.params.zipfile_path)
+        else:
+            print(self.params.zipfile_path + ' exists, so not downloaded')
+        return    
+        
+    def unzip_if_not_unzipped(self):    
+        if not glob.glob(os.sep.join([self.params.zip_dir, '*.xlsx'])) and not glob.glob(os.sep.join([self.params.zip_dir, '*.xls'])):
+            print('Unzipping file: ' + self.params.zipfile)
+            unzip(self.params.data_dir,self.params.zipfile)
+        else:
+            print('*.xlsx or *.xls files exist in ' + self.params.zip_dir + ', so zip file not extracted')
+        return
 
-def read_xls_year(year,params):
-    excel_file_path = os.sep.join([params.zip_dir, params.file_prefix + str(year) + '.xls'])
-    df = pd.read_excel(excel_file_path, 'OGÓŁEM')
-    return df
+    def convert_to_xls_if_not_converted(self):    
+        if not glob.glob(os.sep.join([self.params.zip_dir, '*.xls'])):
+            print('Converting *.xlsx to *.xls')
+            for year in range(2000,2022):
+                file = self.params.file_prefix_terminal + str(year) + self.params.file_suffix
+                xlsx2xls(self.params.zip_dir,file, self.params.libreoffice_cmd, inplace = True)
+        else:
+            print('*.xls files exist in ' + self.params.zip_dir + ', so *.xlsx files not converted to *.xls')
+        return
 
-def format_df(df, year):
-    df['Rok']=year
-    df.drop(index=range(0,5),axis=1, inplace=True)
-    df.drop(index=6, axis=1, inplace=True)
-    df.iloc[0,0]='Wiek zmarłych w latach'
-    df.iloc[0,1]='NUTS'
-    df.iloc[0,2]='Podregiony'
-    df.columns = df.iloc[0]
-    df = df[1:]
-    df.reset_index(inplace = True, drop = True)
-    df.rename_axis('', axis='columns', inplace=True)
-    return df
+    def download_unzip_convert_to_xls(self):
+        self.download_if_no_zipfile()
+        self.unzip_if_not_unzipped()
+        self.convert_to_xls_if_not_converted()
+        return
+
+    def read_xls_year(self,year):
+        excel_file_path = os.sep.join([self.params.zip_dir, self.params.file_prefix + str(year) + '.xls'])
+        df = pd.read_excel(excel_file_path, 'OGÓŁEM')
+        return df
+
+    def format_df(self,df, year):
+        df['Rok']=year
+        df.drop(index=range(0,5),axis=1, inplace=True)
+        df.drop(index=6, axis=1, inplace=True)
+        df.iloc[0,0]='Wiek zmarłych w latach'
+        df.iloc[0,1]='NUTS'
+        df.iloc[0,2]='Podregiony'
+        df.columns = df.iloc[0]
+        df = df[1:]
+        df.reset_index(inplace = True, drop = True)
+        df.rename_axis('', axis='columns', inplace=True)
+        return df
  
