@@ -53,3 +53,22 @@ def download_unzip_convert_to_xls(params : GUSparams):
     unzip_if_not_unzipped(params)
     convert_to_xls_if_not_converted(params)
     return
+
+def read_xls_year(year,params):
+    excel_file_path = os.sep.join([params.zip_dir, params.file_prefix + str(year) + '.xls'])
+    df = pd.read_excel(excel_file_path, 'OGÓŁEM')
+    return df
+
+def format_df(df, year):
+    df['Rok']=year
+    df.drop(index=range(0,5),axis=1, inplace=True)
+    df.drop(index=6, axis=1, inplace=True)
+    df.iloc[0,0]='Wiek zmarłych w latach'
+    df.iloc[0,1]='NUTS'
+    df.iloc[0,2]='Podregiony'
+    df.columns = df.iloc[0]
+    df = df[1:]
+    df.reset_index(inplace = True, drop = True)
+    df.rename_axis('', axis='columns', inplace=True)
+    return df
+
