@@ -71,4 +71,4 @@ def format_df(df, year):
     df.reset_index(inplace = True, drop = True)
     df.rename_axis('', axis='columns', inplace=True)
     return df
-
+ 
