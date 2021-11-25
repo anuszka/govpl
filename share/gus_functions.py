@@ -160,19 +160,17 @@ class Analysis:
             pandas.DataFrame
 
         """
-
-        # BUG: [GOV-20] Year column is a number, it should be a string
-        df['Rok']=year
-        
         df.drop(index=range(0,5),axis=1, inplace=True)
         df.drop(index=6, axis=1, inplace=True)
         df.iloc[0,0]='Wiek zmarłych w latach'
         df.iloc[0,1]='NUTS'
         df.iloc[0,2]='Podregiony'
-        df.columns = df.iloc[0] # Here!
+        df.columns = df.iloc[0]
         df = df[1:]
         df.reset_index(inplace = True, drop = True)
         df.rename_axis('', axis='columns', inplace=True)
-        return df
+        df1 = df.copy(deep=True)
+        df1['Rok']=year
+        return df1
  
 # ============================================================================
