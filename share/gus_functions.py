@@ -4,7 +4,7 @@ from share.helper_functions import (
     xlsx2xls
 )
 # import govpl_functions as govpl
-import pandas as pd
+import pandas
 import importlib
 import glob
 import os
@@ -55,18 +55,17 @@ class Analysis:
         params(GUSparams) : Parameters for GUS data download and save
     Methods:
         download_if_no_zipfile(self) -> None :
-        unzip_if_not_unzipped(self) -> None:
-        convert_to_xls_if_not_converted(self) -> None:
-        download_unzip_convert_to_xls(self) -> None:
-        read_xls_year(self,year) -> pd.DataFrame:
-        format_df(self,df : pd.DataFrame, year : int) -> pd.DataFrame:
+        unzip_if_not_unzipped(self) -> None :
+        convert_to_xls_if_not_converted(self) -> None :
+        download_unzip_convert_to_xls(self) -> None :
+        read_xls_year(self,year) -> pandas.DataFrame:
+        format_df(self,df : pandas.DataFrame, year : int) -> pandas.DataFrame:
     """
-    
+    # --------------------------------------------------------------------------
     params : GUSparams
-    
+    # --------------------------------------------------------------------------
     def download_if_no_zipfile(self) -> None:
         """
-        Description of download_if_no_zipfile
 
         Args:
             None
@@ -81,10 +80,9 @@ class Analysis:
         else:
             print(self.params.zipfile_path + ' exists, so not downloaded')
         return    
-        
+    # --------------------------------------------------------------------------    
     def unzip_if_not_unzipped(self) -> None:
         """
-        Description of unzip_if_not_unzipped
 
         Args:
             None
@@ -99,14 +97,12 @@ class Analysis:
         else:
             print('*.xlsx or *.xls files exist in ' + self.params.zip_dir + ', so zip file not extracted')
         return
-
+    # --------------------------------------------------------------------------
     def convert_to_xls_if_not_converted(self) -> None:
         """
-        Description of convert_to_xls_if_not_converted
 
         Args:
-            self (undefined):
-
+            None
         Returns:
             None
 
@@ -119,14 +115,12 @@ class Analysis:
         else:
             print('*.xls files exist in ' + self.params.zip_dir + ', so *.xlsx files not converted to *.xls')
         return
-
+    # --------------------------------------------------------------------------
     def download_unzip_convert_to_xls(self) -> None:
         """
-        Description of download_unzip_convert_to_xls
 
         Args:
-            self (undefined):
-
+            None
         Returns:
             None
 
@@ -135,34 +129,32 @@ class Analysis:
         self.unzip_if_not_unzipped()
         self.convert_to_xls_if_not_converted()
         return
-
-    def read_xls_year(self,year) -> pd.DataFrame:
+    # --------------------------------------------------------------------------
+    def read_xls_year(self,year : int) -> pandas.DataFrame:
         """
-        Description of read_xls_year
+        Read GUS data file (*.xls from excel_file_path) for the specific year
 
         Args:
-            self (undefined):
-            year (undefined):
-
-        Returns:
-            pd.DataFrame
-
-        """
-        excel_file_path = os.sep.join([self.params.zip_dir, self.params.file_prefix + str(year) + '.xls'])
-        df = pd.read_excel(excel_file_path, 'OGÓŁEM')
-        return df
-
-    def format_df(self,df : pd.DataFrame, year : int) -> pd.DataFrame:
-        """
-        Description of format_df
-
-        Args:
-            self (undefined):
-            df (undefined):
             year (int):
 
         Returns:
-            pd.DataFrame
+            pandas.DataFrame
+
+        """
+        excel_file_path = os.sep.join([self.params.zip_dir, self.params.file_prefix + str(year) + '.xls'])
+        df = pandas.read_excel(excel_file_path, 'OGÓŁEM')
+        return df
+    # --------------------------------------------------------------------------
+    def format_df(self,df : pandas.DataFrame, year : int) -> pandas.DataFrame:
+        """
+        Format GUS data frame for the specific year
+
+        Args:
+            df (pandas.DataFrame): GUS data frame, unformatted
+            year (int):
+
+        Returns:
+            pandas.DataFrame
 
         """
         df['Rok']=year
