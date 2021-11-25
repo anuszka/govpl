@@ -109,7 +109,10 @@ class Analysis:
         """
         if not glob.glob(os.sep.join([self.params.zip_dir, '*.xls'])):
             print('Converting *.xlsx to *.xls')
+
+            #TODO: [GOV-19] Set year range as parameter
             for year in range(2000,2022):
+            
                 file = self.params.file_prefix_terminal + str(year) + self.params.file_suffix
                 xlsx2xls(self.params.zip_dir,file, self.params.libreoffice_cmd, inplace = True)
         else:
@@ -157,13 +160,16 @@ class Analysis:
             pandas.DataFrame
 
         """
+
+        # BUG: [GOV-20] Year column is a number, it should be a string
         df['Rok']=year
+        
         df.drop(index=range(0,5),axis=1, inplace=True)
         df.drop(index=6, axis=1, inplace=True)
         df.iloc[0,0]='Wiek zmarłych w latach'
         df.iloc[0,1]='NUTS'
         df.iloc[0,2]='Podregiony'
-        df.columns = df.iloc[0]
+        df.columns = df.iloc[0] # Here!
         df = df[1:]
         df.reset_index(inplace = True, drop = True)
         df.rename_axis('', axis='columns', inplace=True)
