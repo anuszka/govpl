@@ -62,6 +62,8 @@ class Analysis:
         year_data_dict : dict
             dict of {int : pandas.core.frame.DataFrame}
             Dictionary of {year : year GUS data frame}
+        all_years_df : pandas.DataFrame
+            GUS data for all years
 
     Methods:
     --------
@@ -75,10 +77,13 @@ class Analysis:
             Merge GUS data frames for all years
         make_year_data_dict() -> None
             Make dictionary of year GUS data frames
+        def make_all_years_df() -> None
+            Merge GUS data frames for all years
     """
     # --------------------------------------------------------------------------
     params : GUSparams
     year_data_dict : dict
+    all_years_df : pandas.DataFrame
     # --------------------------------------------------------------------------
     def download_if_no_zipfile(self) -> None:
         """
@@ -100,13 +105,13 @@ class Analysis:
     # --------------------------------------------------------------------------    
     def unzip_if_not_unzipped(self) -> None:
         """
-
         Args:
+        
             None
 
         Returns:
+        --------
             None
-
         """
         if not glob.glob(os.sep.join([self.params.zip_dir, '*.xlsx'])) and not glob.glob(os.sep.join([self.params.zip_dir, '*.xls'])):
             print('Unzipping file: ' + self.params.zipfile)
@@ -117,12 +122,13 @@ class Analysis:
     # --------------------------------------------------------------------------
     def convert_to_xls_if_not_converted(self) -> None:
         """
-
         Args:
-            None
-        Returns:
+        -----
             None
 
+        Returns:
+        --------
+            None
         """
         if not glob.glob(os.sep.join([self.params.zip_dir, '*.xls'])):
             print('Converting *.xlsx to *.xls')
@@ -137,12 +143,13 @@ class Analysis:
     # --------------------------------------------------------------------------
     def download_unzip_convert_to_xls(self) -> None:
         """
-
         Args:
-            None
-        Returns:
+        -----
             None
 
+        Returns:
+        --------
+            None
         """
         self.download_if_no_zipfile()
         self.unzip_if_not_unzipped()
@@ -154,9 +161,11 @@ class Analysis:
         Read GUS data file (*.xls from excel_file_path) for the specific year
 
         Args:
-            year (int):
+        -----
+            year : int
 
         Returns:
+        --------
             pandas.DataFrame
 
         """
@@ -169,10 +178,13 @@ class Analysis:
         Format GUS data frame for the specific year
 
         Args:
-            df (pandas.DataFrame): GUS data frame, unformatted
-            year (int):
+        -----
+            df : pandas.DataFrame
+                GUS data frame, unformatted
+            year : int
 
         Returns:
+        --------
             pandas.DataFrame
 
         """
@@ -208,26 +220,20 @@ class Analysis:
             df = self.format_df(df,year)
             self.year_data_dict[year]=df
         return
+    # --------------------------------------------------------------------------
+    def make_all_years_df(self) -> None:
+        """
+        Merge GUS data frames for all years
 
-    # def merge_dfs(self) -> pandas.DataFrame:
-    #     """
-    #     Merge GUS data frames for all years
+        Args:
+        -----
+            None
 
-    #     Args:
-    #     -----
-    #         None
-
-    #     Returns:
-    #     --------
-    #         pandas.DataFrame
-
-    #     """
-    #     self.year_data_dict={}
-    #     for year in range(self.params.year_start,self.params.year_end+1):
-    #         df = self.read_xls_year(year)
-    #         df = self.format_df(df,year)
-    #         year_data_dict[year]=df
-    #     df1=pd.concat(list(year_data_dict.values()), ignore_index=True)
-    #     return df1
+        Returns:
+        --------
+            None
+        """
+        self.all_years_df=pandas.concat(list(self.year_data_dict.values()), ignore_index=True)
+        return
 
 # ============================================================================
