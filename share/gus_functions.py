@@ -54,27 +54,40 @@ class GUSparams(NamedTuple):
 class Analysis:
     """
     Analysis of GUS data 
-    -----------------------
+    
     Attributes:
-        params(GUSparams) : Parameters for GUS data download and save
+    -----------
+        params : GUSparams
+            Parameters for GUS data download and save
+        year_data_dict : dict
+            dict of {int : pandas.core.frame.DataFrame}
+            Dictionary of {year : year GUS data frame}
+
     Methods:
-        download_if_no_zipfile(self) -> None :
-        unzip_if_not_unzipped(self) -> None :
-        convert_to_xls_if_not_converted(self) -> None :
-        download_unzip_convert_to_xls(self) -> None :
-        read_xls_year(self,year) -> pandas.DataFrame:
-        format_df(self,df : pandas.DataFrame, year : int) -> pandas.DataFrame:
+    --------
+        download_if_no_zipfile() -> None :
+        unzip_if_not_unzipped() -> None :
+        convert_to_xls_if_not_converted() -> None :
+        download_unzip_convert_to_xls() -> None :
+        read_xls_year(year) -> pandas.DataFrame :
+        format_df(df : pandas.DataFrame, year : int) -> pandas.DataFrame :
+        merge_dfs() -> pandas.DataFrame
+            Merge GUS data frames for all years
+        make_year_data_dict() -> None
+            Make dictionary of year GUS data frames
     """
     # --------------------------------------------------------------------------
     params : GUSparams
+    year_data_dict : dict
     # --------------------------------------------------------------------------
     def download_if_no_zipfile(self) -> None:
         """
-
         Args:
+        -----
             None
 
         Returns:
+        --------
             None
 
         """
@@ -175,5 +188,46 @@ class Analysis:
         df1 = df.copy(deep=True)
         df1['Rok']=year
         return df1
- 
+    # ------------------------------------------------------------------------
+
+    def make_year_data_dict(self) -> None:
+        """
+        Make dictionary of year GUS data frames
+
+        Args:
+        -----
+            None
+
+        Returns:
+        --------
+            None
+        """
+        self.year_data_dict={}
+        for year in range(self.params.year_start,self.params.year_end+1):
+            df = self.read_xls_year(year)
+            df = self.format_df(df,year)
+            self.year_data_dict[year]=df
+        return
+
+    # def merge_dfs(self) -> pandas.DataFrame:
+    #     """
+    #     Merge GUS data frames for all years
+
+    #     Args:
+    #     -----
+    #         None
+
+    #     Returns:
+    #     --------
+    #         pandas.DataFrame
+
+    #     """
+    #     self.year_data_dict={}
+    #     for year in range(self.params.year_start,self.params.year_end+1):
+    #         df = self.read_xls_year(year)
+    #         df = self.format_df(df,year)
+    #         year_data_dict[year]=df
+    #     df1=pd.concat(list(year_data_dict.values()), ignore_index=True)
+    #     return df1
+
 # ============================================================================
