@@ -15,34 +15,15 @@ from typing import NamedTuple
 # TODO: [GOV-18] Make a regular class with a constructor
 
 class GUSparams(NamedTuple):
-    """
-    Parameters for GUS data download and save
-
-    Args:
-        NamedTuple (str): 
-            data_dir (str): Local directory to save data
-            img_dir (str): Local directory to save images
-            url (str): GUS data file URL
-            zipfile (str): Zipped data file name
-            zipfile_path (str): Path to zipped data file name = zip_dir + zipfile 
-            zip_dir (str): Directory for zipped data file
-            file_prefix (str): Here: 'Zgony wedêug tygodni w Polsce_'
-            file_prefix_terminal (str): Here: 'Zgony\ wedêug\ tygodni\ w\ Polsce_'
-            file_suffix (str): Here: '.xlsx'
-            libreoffice_cmd (str): LibreOffice command for xlsx to xls conversion
-    """
     data_dir : str
     img_dir : str
     url : str
     zipfile : str
-
     # TODO: [GOV-15] Automatically create zipfile_path within class
     zipfile_path : str 
     zip_dir : str
-
     # TODO: [GOV-16] Set default values of file_prefix, file_prefix_terminal, file_suffix, libreoffice_cmd
     file_prefix : str 
-
     # TODO: [GOV-17] Generate file_prefix_terminal automatically or use it as file_prefix
     file_prefix_terminal : str 
     file_suffix : str
