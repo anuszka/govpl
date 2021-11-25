@@ -29,7 +29,9 @@ class GUSparams(NamedTuple):
         file_prefix(str) : Here: 'Zgony wedêug tygodni w Polsce_'
         file_prefix_terminal(str) : Here: 'Zgony\ wedêug\ tygodni\ w\ Polsce_'
         file_suffix(str) : Here: '.xlsx'
-        libreoffice_cmd(str) : Command to run LibreOffice. Needed for xlsx to xls conversion 
+        libreoffice_cmd(str) : Command to run LibreOffice. Needed for xlsx to xls conversion
+        year_start(int) : 
+        year_end(int) : 
     """
     data_dir : str
     img_dir : str
@@ -44,33 +46,53 @@ class GUSparams(NamedTuple):
     file_prefix_terminal : str 
     file_suffix : str
     libreoffice_cmd : str
+    year_start : int
+    year_end : int
 
 # ============================================================================
 
 class Analysis:
     """
     Analysis of GUS data 
-    -----------------------
+    
     Attributes:
-        params(GUSparams) : Parameters for GUS data download and save
+    -----------
+        params : GUSparams
+            Parameters for GUS data download and save
+        year_data_dict : dict
+            dict of {int : pandas.core.frame.DataFrame}
+            Dictionary of {year : year GUS data frame}
+        all_years_df : pandas.DataFrame
+            GUS data for all years
+
     Methods:
-        download_if_no_zipfile(self) -> None :
-        unzip_if_not_unzipped(self) -> None :
-        convert_to_xls_if_not_converted(self) -> None :
-        download_unzip_convert_to_xls(self) -> None :
-        read_xls_year(self,year) -> pandas.DataFrame:
-        format_df(self,df : pandas.DataFrame, year : int) -> pandas.DataFrame:
+    --------
+        download_if_no_zipfile() -> None :
+        unzip_if_not_unzipped() -> None :
+        convert_to_xls_if_not_converted() -> None :
+        download_unzip_convert_to_xls() -> None :
+        read_xls_year(year) -> pandas.DataFrame :
+        format_df(df : pandas.DataFrame, year : int) -> pandas.DataFrame :
+        merge_dfs() -> pandas.DataFrame
+            Merge GUS data frames for all years
+        make_year_data_dict() -> None
+            Make dictionary of year GUS data frames
+        def make_all_years_df() -> None
+            Merge GUS data frames for all years
     """
     # --------------------------------------------------------------------------
     params : GUSparams
+    year_data_dict : dict
+    all_years_df : pandas.DataFrame
     # --------------------------------------------------------------------------
     def download_if_no_zipfile(self) -> None:
         """
-
         Args:
+        -----
             None
 
         Returns:
+        --------
             None
 
         """
@@ -83,13 +105,13 @@ class Analysis:
     # --------------------------------------------------------------------------    
     def unzip_if_not_unzipped(self) -> None:
         """
-
         Args:
+        
             None
 
         Returns:
+        --------
             None
-
         """
         if not glob.glob(os.sep.join([self.params.zip_dir, '*.xlsx'])) and not glob.glob(os.sep.join([self.params.zip_dir, '*.xls'])):
             print('Unzipping file: ' + self.params.zipfile)
@@ -100,18 +122,18 @@ class Analysis:
     # --------------------------------------------------------------------------
     def convert_to_xls_if_not_converted(self) -> None:
         """
-
         Args:
-            None
-        Returns:
+        -----
             None
 
+        Returns:
+        --------
+            None
         """
         if not glob.glob(os.sep.join([self.params.zip_dir, '*.xls'])):
             print('Converting *.xlsx to *.xls')
 
-            #TODO: [GOV-19] Set year range as parameter
-            for year in range(2000,2022):
+            for year in range(self.year_start,self.year_end+1):
             
                 file = self.params.file_prefix_terminal + str(year) + self.params.file_suffix
                 xlsx2xls(self.params.zip_dir,file, self.params.libreoffice_cmd, inplace = True)
@@ -121,12 +143,13 @@ class Analysis:
     # --------------------------------------------------------------------------
     def download_unzip_convert_to_xls(self) -> None:
         """
-
         Args:
-            None
-        Returns:
+        -----
             None
 
+        Returns:
+        --------
+            None
         """
         self.download_if_no_zipfile()
         self.unzip_if_not_unzipped()
@@ -138,9 +161,11 @@ class Analysis:
         Read GUS data file (*.xls from excel_file_path) for the specific year
 
         Args:
-            year (int):
+        -----
+            year : int
 
         Returns:
+        --------
             pandas.DataFrame
 
         """
@@ -153,10 +178,13 @@ class Analysis:
         Format GUS data frame for the specific year
 
         Args:
-            df (pandas.DataFrame): GUS data frame, unformatted
-            year (int):
+        -----
+            df : pandas.DataFrame
+                GUS data frame, unformatted
+            year : int
 
         Returns:
+        --------
             pandas.DataFrame
 
         """
@@ -172,5 +200,40 @@ class Analysis:
         df1 = df.copy(deep=True)
         df1['Rok']=year
         return df1
- 
+    # ------------------------------------------------------------------------
+
+    def make_year_data_dict(self) -> None:
+        """
+        Make dictionary of year GUS data frames
+
+        Args:
+        -----
+            None
+
+        Returns:
+        --------
+            None
+        """
+        self.year_data_dict={}
+        for year in range(self.params.year_start,self.params.year_end+1):
+            df = self.read_xls_year(year)
+            df = self.format_df(df,year)
+            self.year_data_dict[year]=df
+        return
+    # --------------------------------------------------------------------------
+    def make_all_years_df(self) -> None:
+        """
+        Merge GUS data frames for all years
+
+        Args:
+        -----
+            None
+
+        Returns:
+        --------
+            None
+        """
+        self.all_years_df=pandas.concat(list(self.year_data_dict.values()), ignore_index=True)
+        return
+
 # ============================================================================
