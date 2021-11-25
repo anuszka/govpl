@@ -29,7 +29,9 @@ class GUSparams(NamedTuple):
         file_prefix(str) : Here: 'Zgony wedêug tygodni w Polsce_'
         file_prefix_terminal(str) : Here: 'Zgony\ wedêug\ tygodni\ w\ Polsce_'
         file_suffix(str) : Here: '.xlsx'
-        libreoffice_cmd(str) : Command to run LibreOffice. Needed for xlsx to xls conversion 
+        libreoffice_cmd(str) : Command to run LibreOffice. Needed for xlsx to xls conversion
+        year_start(int) : 
+        year_end(int) : 
     """
     data_dir : str
     img_dir : str
@@ -44,6 +46,8 @@ class GUSparams(NamedTuple):
     file_prefix_terminal : str 
     file_suffix : str
     libreoffice_cmd : str
+    year_start : int
+    year_end : int
 
 # ============================================================================
 
@@ -111,7 +115,7 @@ class Analysis:
             print('Converting *.xlsx to *.xls')
 
             #TODO: [GOV-19] Set year range as parameter
-            for year in range(2000,2022):
+            for year in range(self.year_start,self.year_end+1):
             
                 file = self.params.file_prefix_terminal + str(year) + self.params.file_suffix
                 xlsx2xls(self.params.zip_dir,file, self.params.libreoffice_cmd, inplace = True)
