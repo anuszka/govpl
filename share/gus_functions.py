@@ -114,7 +114,6 @@ class Analysis:
         if not glob.glob(os.sep.join([self.params.zip_dir, '*.xls'])):
             print('Converting *.xlsx to *.xls')
 
-            #TODO: [GOV-19] Set year range as parameter
             for year in range(self.year_start,self.year_end+1):
             
                 file = self.params.file_prefix_terminal + str(year) + self.params.file_suffix
