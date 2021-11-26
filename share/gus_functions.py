@@ -168,13 +168,14 @@ class Analysis:
         """
         if not glob.glob(os.sep.join([self.params.zip_dir, '*.xls'])):
             print('Converting *.xlsx to *.xls')
-
-            for year in range(self.year_start,self.year_end+1):
-            
+            for year in range(self.params.year_start,self.params.year_end+1):
+                print(year, end=' ')
                 file = self.params.file_prefix_terminal + str(year) + self.params.file_suffix
                 xlsx2xls(self.params.zip_dir,file, self.params.libreoffice_cmd, inplace = True)
+            print()
         else:
             print('*.xls files exist in ' + self.params.zip_dir + ', so *.xlsx files not converted to *.xls')
+        
         return
     # --------------------------------------------------------------------------
     def download_unzip_convert_to_xls(self) -> None:
@@ -206,7 +207,10 @@ class Analysis:
 
         """
         excel_file_path = os.sep.join([self.params.zip_dir, self.params.file_prefix + str(year) + '.xls'])
+
+        # TODO: [GOV-25] enable reading other sheets, especially the data for genders
         df = pandas.read_excel(excel_file_path, 'OGÓŁEM')
+        
         return df
     # --------------------------------------------------------------------------
     def format_df(self,df : pandas.DataFrame, year : int) -> pandas.DataFrame:
@@ -251,11 +255,14 @@ class Analysis:
         --------
             None
         """
+        print('Making dictionary of year GUS data frames for each year: year_data_dict {int : pandas.DataFrame}')
         self.year_data_dict={}
         for year in range(self.params.year_start,self.params.year_end+1):
+            print(year, end=' ')
             df = self.read_xls_year(year)
             df = self.format_df(df,year)
             self.year_data_dict[year]=df
+        print()
         return
     # --------------------------------------------------------------------------
     def make_all_years_df(self) -> None:
@@ -270,6 +277,7 @@ class Analysis:
         --------
             None
         """
+        print('Merging GUS data frames from dict in a single data frame: all_years_df')
         self.all_years_df=pandas.concat(list(self.year_data_dict.values()), ignore_index=True)
         return
     # --------------------------------------------------------------------------
@@ -285,10 +293,11 @@ class Analysis:
         --------
             None
         """
-        
+        print('Getting GUS data...')
         self.download_unzip_convert_to_xls()
         self.make_year_data_dict()
         self.make_all_years_df()
+        print('Done.')
         return
 
 # ============================================================================
