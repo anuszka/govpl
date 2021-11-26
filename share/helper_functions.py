@@ -7,7 +7,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 
-
+def set_legend_right() -> None:
+    """
+    Returns:
+    --------
+        None
+    """
+    plt.legend(bbox_to_anchor=(1, 1), loc='upper left', ncol=1)
+    return
 
 def getfile(url, path):
     r = requests.get(url, allow_redirects=True)
@@ -48,29 +55,51 @@ def logformat():
 
 
 
-def plot(plotdf, cols_to_plot, xlim, ylim, logy, fmt, color, xlabel=None, ylabel=None, title=None):
+def plot(
+    plotdf, 
+    cols_to_plot, 
+    xlim=None, 
+    ylim=None, 
+    fmt=None, 
+    color=None, 
+    logy=None, 
+    xlabel=None, 
+    ylabel=None, 
+    title=None, 
+    fontsize=8,
+    grid=True
+    ):
+    """
+    Custom function for data frame plotting
+
+    Args:
+    -----
+        As in pandas.DataFrame.plot
+
+    """
+    
     fig, ax = plt.subplots()
-    plotdf.plot(y=cols_to_plot,ax=ax,logy=logy,grid=True,fontsize=8, color=color)
+    if color:
+        plotdf.plot(y=cols_to_plot,ax=ax,logy=logy,grid=grid,fontsize=fontsize, color=color)
+    else:
+        plotdf.plot(y=cols_to_plot,ax=ax,logy=logy,grid=grid,fontsize=fontsize)
     
     ax.set_xlim( xlim )
     ax.set_ylim( ylim )
 
     ax.set(title=title)
-    ax.set(xlabel=xlabel)
+
+    if xlabel:
+        ax.set(xlabel=xlabel)
     ax.set(ylabel=ylabel)
 
-    # ax.set_xlabel(xlabel) 
-    # ax.set_ylabel(ylabel) 
-    # ax.set_title(title) 
-    
-    # plt.ylabel(xlabel)
-    # plt.xlabel(ylabel)
+    if fmt:
+        ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmt))
 
-    ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmt))
-    plt.legend(bbox_to_anchor=(1, 1), loc='upper left', ncol=1)
-    plt.figure(dpi=300)
+    set_legend_right()
     plt.show()
     figure = ax.figure
+
     return figure
 
 def save_fig(figure, img_dir, figname, figfmt):

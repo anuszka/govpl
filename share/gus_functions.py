@@ -13,7 +13,7 @@ from typing import NamedTuple
 # ==============================================================================
 
 # TODO: [GOV-18] Make a regular class with a constructor
-class GUSparams(NamedTuple):
+class GUSparams:
     """
     Parameters for GUS data download and save
     
@@ -56,7 +56,10 @@ class GUSparams(NamedTuple):
         year_end(int) 
     """
     data_dir : str
+
+    # TODO: [GOV-29] Image directory not needed in GUS data Analysis class. Should be used separately with a future Plot class.
     img_dir : str
+    
     url : str
     zipfile : str
     # TODO: [GOV-15] Automatically create zipfile_path within class
@@ -70,6 +73,34 @@ class GUSparams(NamedTuple):
     libreoffice_cmd : str
     year_start : int
     year_end : int
+    # ------------------------------------------------------------------------
+    def __init__(
+        self,
+        data_dir,
+        img_dir,
+        url,
+        zipfile,
+        file_prefix,
+        file_prefix_terminal,
+        file_suffix,
+        libreoffice_cmd,
+        year_start,
+        year_end):
+
+        self.data_dir = data_dir
+        self.img_dir = img_dir
+        self.url = url
+        self.zipfile = zipfile 
+        self.file_prefix = file_prefix
+        self.file_prefix_terminal = file_prefix_terminal
+        self.file_suffix = file_suffix
+        self.libreoffice_cmd = libreoffice_cmd
+        self.year_start = year_start
+        self.year_end = year_end
+        self.zipfile_path = os.sep.join([data_dir,zipfile])
+        self.zip_dir = os.sep.join([data_dir,'zgony_wg_tygodni'])
+
+        return
 
 # ============================================================================
 
@@ -91,6 +122,9 @@ class Analysis:
 
     Methods:
     --------
+        __init__(params : dict) -> None
+            Constructor
+
         download_if_no_zipfile() -> None
 
         unzip_if_not_unzipped() -> None
@@ -120,6 +154,24 @@ class Analysis:
     params : GUSparams
     year_data_dict : dict
     all_years_df : pandas.DataFrame
+    # --------------------------------------------------------------------------
+    def __init__(self, params : dict) -> None:
+        """
+        Constructor
+
+        Args:
+        -----
+            params : dict
+
+        Returns:
+        --------
+            None
+
+        """
+    
+
+        self.params = GUSparams(**params)
+        return
     # --------------------------------------------------------------------------
     def download_if_no_zipfile(self) -> None:
         """
