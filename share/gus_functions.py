@@ -122,6 +122,9 @@ class Analysis:
 
     Methods:
     --------
+        __init__(params : dict) -> None
+            Constructor
+
         download_if_no_zipfile() -> None
 
         unzip_if_not_unzipped() -> None
@@ -152,10 +155,24 @@ class Analysis:
     year_data_dict : dict
     all_years_df : pandas.DataFrame
     # --------------------------------------------------------------------------
-    def __init__(self, params)-> None:
+    def __init__(self, params : dict) -> None:
+        """
+        Constructor
+
+        Args:
+        -----
+            params : dict
+
+        Returns:
+        --------
+            None
+
+        """
+    
+
         self.params = GUSparams(**params)
         return
-
+    # --------------------------------------------------------------------------
     def download_if_no_zipfile(self) -> None:
         """
         Args:
