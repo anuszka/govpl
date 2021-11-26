@@ -7,7 +7,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 
-
+def set_legend_right() -> None:
+    """
+    Returns:
+    --------
+        None
+    """
+    plt.legend(bbox_to_anchor=(1, 1), loc='upper left', ncol=1)
+    return
 
 def getfile(url, path):
     r = requests.get(url, allow_redirects=True)
