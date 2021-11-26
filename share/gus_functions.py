@@ -23,37 +23,37 @@ class GUSparams:
 
     Attributes:
     -----------
-        data_dir(str)
+        data_dir : str
         
-        img_dir(str)
+        img_dir : str
         
-        url(str)
+        url : str
             GUS data file URL
 
-        zipfile(str)
+        zipfile : str
             Downloaded GUS data file name (*.zip)
 
-        zipfile_path(str)
+        zipfile_path : str
             zip_dir + zipfile
 
-        zip_dir(str)
+        zip_dir : str
             Downloaded GUS data file directory
 
-        file_prefix(str)
+        file_prefix : str
             Here: 'Zgony wedêug tygodni w Polsce_'
 
-        file_prefix_terminal(str)
+        file_prefix_terminal : str
             Here: 'Zgony\ wedêug\ tygodni\ w\ Polsce_'
 
-        file_suffix(str)
+        file_suffix : str
             Here: '.xlsx'
 
-        libreoffice_cmd(str)
+        libreoffice_cmd : str
             Command to run LibreOffice. Needed for xlsx to xls conversion
 
-        year_start(int)
+        year_start : int
 
-        year_end(int) 
+        year_end : int
     """
     data_dir : str
 

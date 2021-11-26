@@ -6,6 +6,7 @@ import pandas as pd
 # import chardet
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
+# -------------------------------------------------------------------------------
 
 def set_legend_right() -> None:
     """
@@ -15,25 +16,83 @@ def set_legend_right() -> None:
     """
     plt.legend(bbox_to_anchor=(1, 1), loc='upper left', ncol=1)
     return
+# -------------------------------------------------------------------------------
 
-def getfile(url, path):
+def getfile(url : str, savepath : str) -> None:
+    """
+    Get file from URL
+
+    Args:
+    -----
+        url : str
+
+        savepath : str
+
+    Returns:
+    --------
+        None
+    """
     r = requests.get(url, allow_redirects=True)
-    open(path, 'wb').write(r.content)
+    open(savepath, 'wb').write(r.content)
+    return
+
+# -------------------------------------------------------------------------------
+
+def unzip(data_dir : str, file : str) -> None:
+    """
+    Args:
+    -----
+        data_dir  : str
+            
+        file : str
+            
+    Returns:
+        None
+ 
+    """
     
-def unzip(data_dir, file):
     with ZipFile(os.sep.join([data_dir,file]), 'r') as zipObj:
        zipObj.extractall(data_dir)
+    return
+# -------------------------------------------------------------------------------
     
-def xlsx2xls(directory,file, libreoffice_cmd, inplace=True):
+def xlsx2xls(directory : str,file : str, libreoffice_cmd : str, inplace : bool =True) -> None:
+    """
+    Args:
+    -----
+        directory : str
+
+        file : str
+
+        libreoffice_cmd : str
+
+        inplace : bool=True
+
+    Returns:
+    --------
+        None
+    """
     command = 'cd ' + directory + ' ; ' + libreoffice_cmd + ' --convert-to xls ./' + file
     os.system(command)
     if inplace:
-        os.system('cd ' + directory + ' ; rm ' + file)      
+        os.system('cd ' + directory + ' ; rm ' + file)
+    return    
+# -------------------------------------------------------------------------------
         
-def was_modified_today(filepath):
+def was_modified_today(filepath : str) -> bool:
+    """
+    Args:
+    -----
+        filepath : str
+
+    Returns:
+    --------
+        bool
+    """
     modified = os.path.getmtime(filepath)
     return pd.to_datetime('today').date() == pd.to_datetime(modified, unit='s').date()
 
+# -------------------------------------------------------------------------------
 
 # def csvs2df(data_dir):
 #     # merges all csv files in directory into one data frame
@@ -48,10 +107,21 @@ def was_modified_today(filepath):
 #     concatenated_df   = pd.concat(dfs, ignore_index=True)
 #     return concatenated_df
 
-def logformat():
+# -------------------------------------------------------------------------------
+
+def logformat() -> str:
+    """
+    Generate format string for clean notation in log scale: 0.01, 0.1, 1, 10, 100 (strip unnecessary zeros)
+
+    Returns:
+    --------
+        str
+            Format string
+    """
     fmt = lambda x, pos: '{:.6f}'.format(x, pos).rstrip('0').rstrip('.')
     return fmt
 
+# -------------------------------------------------------------------------------
 
 
 
@@ -101,30 +171,81 @@ def plot(
     figure = ax.figure
 
     return figure
+# -------------------------------------------------------------------------------
 
-def save_fig(figure, img_dir, figname, figfmt):
+def save_fig(figure, img_dir, figname, figfmt) -> None:
+    """
+    Args:
+    -----
+        figure
+        
+        img_dir
+        
+        figname
+        
+        figfmt
+
+    Returns:
+    --------
+        None
+
+    """
     figure.savefig(os.sep.join([img_dir,figname]), format = figfmt, bbox_inches='tight',facecolor='white', transparent=False) 
     return
+# -------------------------------------------------------------------------------
 
-def display_all_col(df):
+def display_all_col(df) -> None:
+    """
+    Args:
+    -----
+        df
+            pandas data frame
+
+    Returns:
+    --------
+        None
+    """
     pd.set_option('display.max_columns', None)
     display(df)
     pd.reset_option('display.max_columns')
     return
+# -------------------------------------------------------------------------------
 
-def display_all_rows(df):
+def display_all_rows(df) -> None:
+    """
+    Args:
+    -----
+        df
+            pandas data frame
+
+    Returns:
+    --------
+        None
+    """
     pd.set_option('display.max_rows', None)
     display(df)
     pd.reset_option('display.max_rows')
     return
+# -------------------------------------------------------------------------------
 
-def display_all(df):
+def display_all(df) -> None:
+    """
+    Args:
+    -----
+        df
+            pandas data frame
+
+    Returns:
+    --------
+        None
+    """
     pd.set_option('display.max_columns', None)
     pd.set_option('display.max_rows', None)
     display(df)
     pd.reset_option('display.max_rows')
     pd.reset_option('display.max_columns')
     return
+# -------------------------------------------------------------------------------
 
 # ################### Dostosować:
 
