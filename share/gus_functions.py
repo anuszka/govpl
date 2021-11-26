@@ -56,7 +56,10 @@ class GUSparams(NamedTuple):
         year_end(int) 
     """
     data_dir : str
+
+    # TODO: [GOV-29] Image directory not needed in GUS data Analysis class. Should be used separately with a future Plot class.
     img_dir : str
+    
     url : str
     zipfile : str
     # TODO: [GOV-15] Automatically create zipfile_path within class
