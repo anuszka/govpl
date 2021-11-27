@@ -309,6 +309,8 @@ class Analysis:
             print(year, end=' ')
             df = self.read_xls_year(year)
             df = self.format_df(df,year)
+            if df['Wiek zmarłych w latach'].isnull().values.any():
+                df.drop(index=0, inplace=True)
             self.year_data_dict[year]=df
         print()
         return
@@ -342,10 +344,35 @@ class Analysis:
             None
         """
         print('Getting GUS data...')
-        self.download_unzip_convert_to_xls()
-        self.make_year_data_dict()
-        self.make_all_years_df()
+
+        filepath = os.sep.join([self.params.data_dir,(self.params.file_prefix+'.csv')])
+        if ls(filepath):
+            print('Reading '+ filepath)
+            self.all_years_df = pandas.read_csv(filepath)
+        else:
+            self.download_unzip_convert_to_xls()
+            self.make_year_data_dict()
+            self.make_all_years_df()
+            self.save_csv()
         print('Done.')
+        return
+    # --------------------------------------------------------------------------
+    
+    def save_csv(self) -> None:
+        """
+        Saves all_years_df to data_dir/file_prefix.csv
+
+        Args:
+        -----
+            None
+
+        Returns:
+        --------
+            None
+        """
+        filepath = os.sep.join([self.params.data_dir,(self.params.file_prefix+'.csv')])
+        print('Saving GUS data frame for all years as ' + filepath)
+        self.all_years_df.to_csv(filepath)
         return
 
 # ============================================================================
