@@ -287,7 +287,7 @@ class Analysis:
         df.reset_index(inplace = True, drop = True)
         df.rename_axis('', axis='columns', inplace=True)
         df1 = df.copy(deep=True)
-        df1['Rok']=year
+        df1.insert(0, 'Rok', year)
         return df1
     # ------------------------------------------------------------------------
 
