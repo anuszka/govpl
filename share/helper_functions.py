@@ -38,14 +38,9 @@ def set_legend_right(oldparams):
     -------
         newparams : dictionary
             oldparams + params for setting the legend on the right, outside of the plot
-
     """
-    
     params = dict_of(bbox_to_anchor=(1, 1), loc='upper left', ncol=1)
-
     newparams = {**oldparams, **params}
-
-    # plt.legend(bbox_to_anchor=(1, 1), loc='upper left', ncol=1)
     return newparams
 # -------------------------------------------------------------------------------
 
@@ -177,8 +172,32 @@ def plot(
 
     Args:
     -----
-        As in pandas.DataFrame.plot
+        plotdf : pandas.DataFrame
 
+        cols_to_plot
+            Data frame columns
+
+        xlim, 
+        ylim, 
+        fmt, 
+        color, 
+        logy, 
+        xlabel, 
+        ylabel, 
+        title, 
+        fontsize,
+        grid
+            As in pandas.DataFrame.plot
+
+        legendlabels : list
+            Legend labels for pyplot
+
+        legendtitle : str
+            Legend title for pyplot
+        
+        Returns:
+        --------
+        matplotlib.figure.Figure
     """
     
     fig, ax = plt.subplots()
@@ -232,7 +251,6 @@ def save_fig(figure, img_dir, figname, figfmt) -> None:
     Returns:
     --------
         None
-
     """
     figure.savefig(os.sep.join([img_dir,figname]), format = figfmt, bbox_inches='tight',facecolor='white', transparent=False) 
     return
