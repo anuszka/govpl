@@ -2,10 +2,27 @@ import requests
 from zipfile import ZipFile
 # import glob
 import os
+import glob
 import pandas as pd
 # import chardet
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
+ # --------------------------------------------------------------------------    
+def ls(pattern : str):
+    """
+    Lists files and directories in the current working directory.
+
+    Args:
+    -----
+        pattern : str
+            ls('*') lists all.
+
+    Returns:
+    --------
+        list of str
+            List of file and directory names
+    """
+    return glob.glob(pattern)
 # -------------------------------------------------------------------------------
 
 def set_legend_right() -> None:
