@@ -1,7 +1,8 @@
 from share.helper_functions import (
     getfile, 
     unzip, 
-    xlsx2xls
+    xlsx2xls,
+    ls
 )
 # import govpl_functions as govpl
 import pandas
@@ -190,7 +191,7 @@ class Analysis:
         else:
             print(self.params.zipfile_path + ' exists, so not downloaded')
         return    
-    # --------------------------------------------------------------------------    
+    # --------------------------------------------------------------------------
     def unzip_if_not_unzipped(self) -> None:
         """
         Args:
@@ -201,7 +202,7 @@ class Analysis:
         --------
             None
         """
-        if not glob.glob(os.sep.join([self.params.zip_dir, '*.xlsx'])) and not glob.glob(os.sep.join([self.params.zip_dir, '*.xls'])):
+        if not ls(os.sep.join([self.params.zip_dir, '*.xlsx'])) and not ls(os.sep.join([self.params.zip_dir, '*.xls'])):
             print('Unzipping file: ' + self.params.zipfile)
             unzip(self.params.data_dir,self.params.zipfile)
         else:
@@ -218,7 +219,7 @@ class Analysis:
         --------
             None
         """
-        if not glob.glob(os.sep.join([self.params.zip_dir, '*.xls'])):
+        if not ls(os.sep.join([self.params.zip_dir, '*.xls'])):
             print('Converting *.xlsx to *.xls')
             for year in range(self.params.year_start,self.params.year_end+1):
                 print(year, end=' ')
