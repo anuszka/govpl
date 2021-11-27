@@ -7,6 +7,7 @@ import pandas as pd
 # import chardet
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
+from sorcery import dict_of
  # --------------------------------------------------------------------------    
 def ls(pattern : str):
     """
@@ -25,14 +26,27 @@ def ls(pattern : str):
     return glob.glob(pattern)
 # -------------------------------------------------------------------------------
 
-def set_legend_right() -> None:
+def set_legend_right(oldparams):
     """
-    Returns:
-    --------
-        None
+    Generate legend params to set the legend on the right, outside of the plot
+
+    Args:
+    -----
+        oldparams : dictionary
+    
+    Returns
+    -------
+        newparams : dictionary
+            oldparams + params for setting the legend on the right, outside of the plot
+
     """
-    plt.legend(bbox_to_anchor=(1, 1), loc='upper left', ncol=1)
-    return
+    
+    params = dict_of(bbox_to_anchor=(1, 1), loc='upper left', ncol=1)
+
+    newparams = {**oldparams, **params}
+
+    # plt.legend(bbox_to_anchor=(1, 1), loc='upper left', ncol=1)
+    return newparams
 # -------------------------------------------------------------------------------
 
 def getfile(url : str, savepath : str) -> None:
@@ -154,7 +168,9 @@ def plot(
     ylabel=None, 
     title=None, 
     fontsize=8,
-    grid=True
+    grid=True,
+    legendlabels=None,
+    legendtitle = None
     ):
     """
     Custom function for data frame plotting
@@ -166,6 +182,7 @@ def plot(
     """
     
     fig, ax = plt.subplots()
+    
     if color:
         plotdf.plot(y=cols_to_plot,ax=ax,logy=logy,grid=grid,fontsize=fontsize, color=color)
     else:
@@ -183,7 +200,17 @@ def plot(
     if fmt:
         ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmt))
 
-    set_legend_right()
+    legendparams = {}
+    if legendlabels:
+        dict = dict_of(labels=legendlabels)
+        legendparams = {**legendparams, **dict}
+
+    if legendtitle:
+        dict = dict_of(title = legendtitle)
+        legendparams = {**legendparams, **dict}
+    
+    legendparams = set_legend_right(legendparams)
+    ax.legend(**legendparams)
     plt.show()
     figure = ax.figure
 
