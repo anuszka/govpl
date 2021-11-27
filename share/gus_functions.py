@@ -17,10 +17,6 @@ class GUSparams:
     """
     Parameters for GUS data download and save
     
-    Inheritance:
-    ------------
-        NamedTuple
-
     Attributes:
     -----------
         data_dir : str
