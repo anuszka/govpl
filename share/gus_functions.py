@@ -311,6 +311,7 @@ class Analysis:
             df = self.format_df(df,year)
             if df['Wiek zmarłych w latach'].isnull().values.any():
                 df.drop(index=0, inplace=True)
+                df.reset_index()
             self.year_data_dict[year]=df
         print()
         return
@@ -372,7 +373,7 @@ class Analysis:
         """
         filepath = os.sep.join([self.params.data_dir,(self.params.file_prefix+'.csv')])
         print('Saving GUS data frame for all years as ' + filepath)
-        self.all_years_df.to_csv(filepath)
+        self.all_years_df.to_csv(filepath,index=False)
         return
 
 # ============================================================================
