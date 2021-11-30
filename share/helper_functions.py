@@ -7,6 +7,7 @@ import pandas as pd
 # import chardet
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
+from sorcery import dict_of, unpack_keys
  # --------------------------------------------------------------------------    
 def ls(pattern : str):
     """
@@ -25,14 +26,22 @@ def ls(pattern : str):
     return glob.glob(pattern)
 # -------------------------------------------------------------------------------
 
-def set_legend_right() -> None:
+def set_legend_right(oldparams):
     """
-    Returns:
-    --------
-        None
+    Generate legend params to set the legend on the right, outside of the plot
+
+    Args:
+    -----
+        oldparams : dictionary
+    
+    Returns
+    -------
+        newparams : dictionary
+            oldparams + params for setting the legend on the right, outside of the plot
     """
-    plt.legend(bbox_to_anchor=(1, 1), loc='upper left', ncol=1)
-    return
+    params = dict_of(bbox_to_anchor=(1, 1), loc='upper left', ncol=1)
+    newparams = {**oldparams, **params}
+    return newparams
 # -------------------------------------------------------------------------------
 
 def getfile(url : str, savepath : str) -> None:
@@ -144,7 +153,7 @@ def logformat() -> str:
 
 def plot(
     plotdf, 
-    cols_to_plot, 
+    y = None, 
     xlim=None, 
     ylim=None, 
     fmt=None, 
@@ -154,22 +163,54 @@ def plot(
     ylabel=None, 
     title=None, 
     fontsize=8,
-    grid=True
+    grid=True,
+    legendlabels=None,
+    legendtitle = None
     ):
     """
     Custom function for data frame plotting
 
     Args:
     -----
-        As in pandas.DataFrame.plot
+        plotdf : pandas.DataFrame
 
+        y
+            Data frame columns
+
+        xlim, 
+        ylim, 
+        fmt, 
+        color, 
+        logy, 
+        xlabel, 
+        ylabel, 
+        title, 
+        fontsize,
+        grid
+            As in pandas.DataFrame.plot
+
+        legendlabels : list
+            Legend labels for pyplot
+
+        legendtitle : str
+            Legend title for pyplot
+        
+        Returns:
+        --------
+        matplotlib.figure.Figure
     """
     
+    
     fig, ax = plt.subplots()
+    
+    dfplotoptions = {}
+
     if color:
-        plotdf.plot(y=cols_to_plot,ax=ax,logy=logy,grid=grid,fontsize=fontsize, color=color)
-    else:
-        plotdf.plot(y=cols_to_plot,ax=ax,logy=logy,grid=grid,fontsize=fontsize)
+        dfplotoptions['color'] = color
+    if y:
+        dfplotoptions['y'] = y
+    plotdf.plot(ax=ax,logy=logy,grid=grid,fontsize=fontsize, **dfplotoptions) # Perhaps more options can be put to dict
+    
     
     ax.set_xlim( xlim )
     ax.set_ylim( ylim )
@@ -183,7 +224,17 @@ def plot(
     if fmt:
         ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmt))
 
-    set_legend_right()
+    legendparams = {}
+    if legendlabels:
+        dict = dict_of(labels=legendlabels)
+        legendparams = {**legendparams, **dict}
+
+    if legendtitle:
+        dict = dict_of(title = legendtitle)
+        legendparams = {**legendparams, **dict}
+    
+    legendparams = set_legend_right(legendparams)
+    ax.legend(**legendparams)
     plt.show()
     figure = ax.figure
 
@@ -205,7 +256,6 @@ def save_fig(figure, img_dir, figname, figfmt) -> None:
     Returns:
     --------
         None
-
     """
     figure.savefig(os.sep.join([img_dir,figname]), format = figfmt, bbox_inches='tight',facecolor='white', transparent=False) 
     return
