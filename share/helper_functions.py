@@ -7,7 +7,7 @@ import pandas as pd
 # import chardet
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
-from sorcery import dict_of
+from sorcery import dict_of, unpack_keys
  # --------------------------------------------------------------------------    
 def ls(pattern : str):
     """
@@ -153,7 +153,7 @@ def logformat() -> str:
 
 def plot(
     plotdf, 
-    cols_to_plot, 
+    y = None, 
     xlim=None, 
     ylim=None, 
     fmt=None, 
@@ -174,7 +174,7 @@ def plot(
     -----
         plotdf : pandas.DataFrame
 
-        cols_to_plot
+        y
             Data frame columns
 
         xlim, 
@@ -200,12 +200,17 @@ def plot(
         matplotlib.figure.Figure
     """
     
+    
     fig, ax = plt.subplots()
     
+    dfplotoptions = {}
+
     if color:
-        plotdf.plot(y=cols_to_plot,ax=ax,logy=logy,grid=grid,fontsize=fontsize, color=color)
-    else:
-        plotdf.plot(y=cols_to_plot,ax=ax,logy=logy,grid=grid,fontsize=fontsize)
+        dfplotoptions['color'] = color
+    if y:
+        dfplotoptions['y'] = y
+    plotdf.plot(ax=ax,logy=logy,grid=grid,fontsize=fontsize, **dfplotoptions) # Perhaps more options can be put to dict
+    
     
     ax.set_xlim( xlim )
     ax.set_ylim( ylim )
