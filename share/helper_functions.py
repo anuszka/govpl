@@ -8,7 +8,36 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from sorcery import dict_of, unpack_keys
- # --------------------------------------------------------------------------    
+
+# --------------------------------------------------------------------------    
+
+def split_dict_by_keys(base_dict : dict, split_keys : list) -> dict:
+        """
+        Split dict by keys given in split_keys list
+
+        Args:
+            base_dict: dict
+                Base dictionary to split. It will not be modified.
+
+            split_keys: list
+                Base list of keys according to which the dict will be split.
+                The list will not be modified.
+
+        Returns:
+            (dict, dict)
+                Dict of items found in split_keys list, dict of items NOT found in split_keys list
+        """
+        dict_not_in_split_keys_list = base_dict.copy()
+        clear_split_keys = split_keys.copy()
+        for d in split_keys:
+            if not dict_not_in_split_keys_list.get(d):
+                clear_split_keys.remove(d)
+
+        # https://stackoverflow.com/questions/41330311/split-dictionary-depending-on-key-lists
+        dict_in_split_keys_list = dict((d, dict_not_in_split_keys_list.pop(d)) for d in clear_split_keys)
+        return dict_in_split_keys_list, dict_not_in_split_keys_list
+
+# --------------------------------------------------------------------------    
 def ls(pattern : str):
     """
     Lists files and directories in the current working directory.

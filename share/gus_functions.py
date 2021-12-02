@@ -12,7 +12,6 @@ import os
 
 # ==============================================================================
 
-# TODO: [GOV-18] Make a regular class with a constructor
 class GUSparams:
     """
     Parameters for GUS data download and save
