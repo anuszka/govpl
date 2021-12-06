@@ -149,6 +149,35 @@ def was_modified_today(filepath : str) -> bool:
 
 # -------------------------------------------------------------------------------
 
+def download_if_not_modified_today(path : str, download_command : str) -> None:
+    """
+    Args:
+        path : str
+        download_command : str
+
+    Returns:
+        None
+    """
+    
+    if os.path.exists(path):
+        print(path + ' exists')
+        if was_modified_today(path):
+            print(path + ' was modified today, not downloading')
+        else:
+            print(path + ' was not modified today')
+            print('Downloading...')
+            os.system(download_command)
+            print(path + ' downloaded')
+    else:
+        print(path + ' does not exist')
+        print('Downloading...')
+        os.system(download_command)
+        print(path + ' downloaded')
+    return
+
+
+# -------------------------------------------------------------------------------
+
 # def csvs2df(data_dir):
 #     # merges all csv files in directory into one data frame
 #     all_files = sorted(glob.glob(os.path.join(data_dir, "*.csv")) ,key=str.lower)
