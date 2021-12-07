@@ -54,3 +54,5 @@ Thumbs.db
 *.mov
 *.wmv
 
+# Python linting settings
+.vscode/settings.json

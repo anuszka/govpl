@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LOGFILE="logs.csv"
+LOGFILE="wojewodztwa.log"
 DOC_ID=1ierEhD6gcq51HAm433knjnVwey4ZE5DCnu1bW7PRG3E
 SHEET_ID=1841152698
 URL="https://docs.google.com/spreadsheets/d/$DOC_ID/export?format=csv&gid=$SHEET_ID"
