@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from sorcery import dict_of, unpack_keys
 
+
 # --------------------------------------------------------------------------    
 
 def split_dict_by_keys(base_dict : dict, split_keys : list) -> dict:
@@ -193,7 +194,9 @@ def download_if_not_modified_today(path : str, download_command : str) -> None:
 
 # -------------------------------------------------------------------------------
 
-def logformat() -> str:
+
+def logformat() -> str: # BUG: [GOV-72] Is it really format string?
+
     """
     Generate format string for clean notation in log scale: 0.01, 0.1, 1, 10, 100 (strip unnecessary zeros)
 
@@ -212,8 +215,8 @@ def logformat() -> str:
 def plot(
     plotdf : pd.DataFrame, 
     y = None, 
-    xlim=None, 
-    ylim=None, 
+    xlim : tuple =None, 
+    ylim : tuple =None, 
     fmt=None, 
     color=None, 
     logy : bool = False, 
@@ -236,8 +239,8 @@ def plot(
         y
             Data frame columns
 
-        xlim,
-        ylim, 
+        xlim : tuple,
+        ylim : tuple, 
         fmt, 
         color, 
         logy : bool, 
@@ -260,7 +263,7 @@ def plot(
         --------
         matplotlib.figure.Figure
     """
-    
+    import datetime # Needed if xlim args are of type DateTime
     
     fig, ax = plt.subplots()
     
