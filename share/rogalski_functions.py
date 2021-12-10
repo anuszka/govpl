@@ -24,6 +24,7 @@ def format_rogalski_voi(df : pd.DataFrame, start_row:int, end_row:int) -> pd.Dat
     dfc.set_index(dfc.columns[0], inplace=True)
     dfc, dfc.columns = dfc[1:] , dfc.iloc[0]
     dfc.index.name = None
+    dfc.columns.name = None
     dfc = dfc.apply(pd.to_numeric)
     dfc.columns = pd.to_datetime(dfc.columns, format='%d.%m.%Y')
     return dfc
