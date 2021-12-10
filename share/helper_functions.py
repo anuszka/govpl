@@ -210,20 +210,21 @@ def logformat() -> str:
 
 
 def plot(
-    plotdf, 
+    plotdf : pd.DataFrame, 
     y = None, 
     xlim=None, 
     ylim=None, 
     fmt=None, 
     color=None, 
-    logy=None, 
-    xlabel=None, 
-    ylabel=None, 
-    title=None, 
-    fontsize=8,
-    grid=True,
+    logy : bool = False, 
+    xlabel : str = None, 
+    ylabel : str = None, 
+    title : str = None, 
+    fontsize : int = 8,
+    grid : bool =True,
     legendlabels=None,
-    legendtitle = None
+    legendtitle : str = None,
+    xticsrotate : float = 0.
     ):
     """
     Custom function for data frame plotting
@@ -235,16 +236,16 @@ def plot(
         y
             Data frame columns
 
-        xlim, 
+        xlim,
         ylim, 
         fmt, 
         color, 
-        logy, 
-        xlabel, 
-        ylabel, 
-        title, 
-        fontsize,
-        grid
+        logy : bool, 
+        xlabel : str, 
+        ylabel : str, 
+        title : str, 
+        fontsize : int,
+        grid : bool
             As in pandas.DataFrame.plot
 
         legendlabels : list
@@ -253,6 +254,8 @@ def plot(
         legendtitle : str
             Legend title for pyplot
         
+        xticsrotate : float
+
         Returns:
         --------
         matplotlib.figure.Figure
@@ -293,6 +296,9 @@ def plot(
     
     legendparams = set_legend_right(legendparams)
     ax.legend(**legendparams)
+
+    plt.xticks(rotation=xticsrotate)
+
     plt.show()
     figure = ax.figure
 
