@@ -56,3 +56,6 @@ Thumbs.db
 
 # Python linting settings
 .vscode/settings.json
+
+# Data files
+*.csv
