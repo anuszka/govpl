@@ -1,7 +1,11 @@
+"""
+Functions for retrieving data from the Rogalski's Google Spreadsheet:
+http://bit.ly/covid19-poland
+"""
 import pandas as pd
-# --------------------------------------------------------------------------    
+# --------------------------------------------------------------------------
 
-def format_Rogalski_voi(df : pd.DataFrame, start_row:int, end_row:int) -> pd.DataFrame:
+def format_rogalski_voi(df : pd.DataFrame, start_row:int, end_row:int) -> pd.DataFrame:
     """
     Format Rogalski data frame
 
@@ -13,7 +17,7 @@ def format_Rogalski_voi(df : pd.DataFrame, start_row:int, end_row:int) -> pd.Dat
     Returns:
         pandas.DataFrame
     """
-    
+
     dfc = df[start_row:end_row].copy(deep=True)
     dfc.iloc[0,1:304] = dfc.iloc[0,1:304] + '.2020'
     dfc.iloc[0,304:] = dfc.iloc[0,304:] + '.2021'
@@ -24,10 +28,10 @@ def format_Rogalski_voi(df : pd.DataFrame, start_row:int, end_row:int) -> pd.Dat
     dfc.columns = pd.to_datetime(dfc.columns, format='%d.%m.%Y')
     return dfc
 
-# --------------------------------------------------------------------------    
+# --------------------------------------------------------------------------
 
 
-def format_Rogalski_voi_cases(df : pd.DataFrame) -> pd.DataFrame:
+def format_rogalski_voi_cases(df : pd.DataFrame) -> pd.DataFrame:
     """
     Format Rogalski data frame, cases
 
@@ -37,11 +41,10 @@ def format_Rogalski_voi_cases(df : pd.DataFrame) -> pd.DataFrame:
     Returns:
         pandas.DataFrame
     """
-    dfc = format_Rogalski_voi(df, 9, 26)
+    dfc = format_rogalski_voi(df, 9, 26)
     return dfc
-# --------------------------------------------------------------------------    
-
-def format_Rogalski_voi_deaths(df : pd.DataFrame) -> pd.DataFrame:
+# --------------------------------------------------------------------------
+def format_rogalski_voi_deaths(df : pd.DataFrame) -> pd.DataFrame:
     """
     Format Rogalski data frame, deaths
 
@@ -51,10 +54,10 @@ def format_Rogalski_voi_deaths(df : pd.DataFrame) -> pd.DataFrame:
     Returns:
         pandas.DataFrame
     """
-    dfc = format_Rogalski_voi(df, 52, 69)
+    dfc = format_rogalski_voi(df, 52, 69)
     return dfc
 
-# --------------------------------------------------------------------------    
+# --------------------------------------------------------------------------
 
 def data_voi_df(gsheet_df : pd.DataFrame, option : str)-> pd.DataFrame:
     """
@@ -69,7 +72,7 @@ def data_voi_df(gsheet_df : pd.DataFrame, option : str)-> pd.DataFrame:
         pd.DataFrame
     """
     if option == 'cases':
-        dfc = format_Rogalski_voi_cases(gsheet_df)
+        dfc = format_rogalski_voi_cases(gsheet_df)
     elif option == 'deaths':
-        dfc = format_Rogalski_voi_deaths(gsheet_df)
+        dfc = format_rogalski_voi_deaths(gsheet_df)
     return dfc

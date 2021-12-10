@@ -1,44 +1,49 @@
-import requests
+"""
+Helper functions
+"""
+
 from zipfile import ZipFile
-# import glob
 import os
 import glob
+import datetime # Needed if xlim args are of type DateTime in plot()
+import requests
 import pandas as pd
-# import chardet
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
-from sorcery import dict_of, unpack_keys
+from sorcery import dict_of
+from IPython.display import display
 
-
-# --------------------------------------------------------------------------    
+# --------------------------------------------------------------------------
 
 def split_dict_by_keys(base_dict : dict, split_keys : list) -> dict:
-        """
-        Split dict by keys given in split_keys list
+    """
+    Split dict by keys given in split_keys list
 
-        Args:
-            base_dict: dict
-                Base dictionary to split. It will not be modified.
+    Args:
+        base_dict: dict
+            Base dictionary to split. It will not be modified.
 
-            split_keys: list
-                Base list of keys according to which the dict will be split.
-                The list will not be modified.
+        split_keys: list
+            Base list of keys according to which the dict will be split.
+            The list will not be modified.
 
-        Returns:
-            (dict, dict)
-                Dict of items found in split_keys list, dict of items NOT found in split_keys list
-        """
-        dict_not_in_split_keys_list = base_dict.copy()
-        clear_split_keys = split_keys.copy()
-        for d in split_keys:
-            if not dict_not_in_split_keys_list.get(d):
-                clear_split_keys.remove(d)
+    Returns:
+        (dict, dict)
+            Dict of items found in split_keys list, dict of items NOT found in split_keys list
+    """
+    dict_not_in_split_keys_list = base_dict.copy()
+    clear_split_keys = split_keys.copy()
+    for split_key in split_keys:
+        if not dict_not_in_split_keys_list.get(split_key):
+            clear_split_keys.remove(split_key)
 
-        # https://stackoverflow.com/questions/41330311/split-dictionary-depending-on-key-lists
-        dict_in_split_keys_list = dict((d, dict_not_in_split_keys_list.pop(d)) for d in clear_split_keys)
-        return dict_in_split_keys_list, dict_not_in_split_keys_list
+    # https://stackoverflow.com/questions/41330311/split-dictionary-depending-on-key-lists
+    dict_in_split_keys_list = dict(
+        (split_key, dict_not_in_split_keys_list.pop(split_key)) for split_key in clear_split_keys
+        )
+    return dict_in_split_keys_list, dict_not_in_split_keys_list
 
-# --------------------------------------------------------------------------    
+# --------------------------------------------------------------------------
 def ls(pattern : str):
     """
     Lists files and directories in the current working directory.
@@ -63,7 +68,7 @@ def set_legend_right(oldparams):
     Args:
     -----
         oldparams : dictionary
-    
+
     Returns
     -------
         newparams : dictionary
@@ -88,8 +93,8 @@ def getfile(url : str, savepath : str) -> None:
     --------
         None
     """
-    r = requests.get(url, allow_redirects=True)
-    open(savepath, 'wb').write(r.content)
+    req = requests.get(url, allow_redirects=True)
+    open(savepath, 'wb').write(req.content)
     return
 
 # -------------------------------------------------------------------------------
@@ -99,19 +104,18 @@ def unzip(data_dir : str, file : str) -> None:
     Args:
     -----
         data_dir  : str
-            
+
         file : str
-            
+
     Returns:
         None
- 
+
     """
-    
-    with ZipFile(os.sep.join([data_dir,file]), 'r') as zipObj:
-       zipObj.extractall(data_dir)
+    with ZipFile(os.sep.join([data_dir,file]), 'r') as zip_obj:
+        zip_obj.extractall(data_dir)
     return
 # -------------------------------------------------------------------------------
-    
+
 def xlsx2xls(directory : str,file : str, libreoffice_cmd : str, inplace : bool =True) -> None:
     """
     Args:
@@ -132,9 +136,9 @@ def xlsx2xls(directory : str,file : str, libreoffice_cmd : str, inplace : bool =
     os.system(command)
     if inplace:
         os.system('cd ' + directory + ' ; rm ' + file)
-    return    
+    return
 # -------------------------------------------------------------------------------
-        
+
 def was_modified_today(filepath : str) -> bool:
     """
     Args:
@@ -159,7 +163,7 @@ def download_if_not_modified_today(path : str, download_command : str) -> None:
     Returns:
         None
     """
-    
+
     if os.path.exists(path):
         print(path + ' exists')
         if was_modified_today(path):
@@ -183,11 +187,11 @@ def download_if_not_modified_today(path : str, download_command : str) -> None:
 #     # merges all csv files in directory into one data frame
 #     all_files = sorted(glob.glob(os.path.join(data_dir, "*.csv")) ,key=str.lower)
 #     dfs = []
-#     for f in all_files: 
+#     for f in all_files:
 #         raw_data = open(f, 'rb').read()
 #         encoding=chardet.detect(raw_data)['encoding']
 #         if encoding == 'Windows-1252':
-#             encoding = 'Windows-1250'  
+#             encoding = 'Windows-1250'
 #         dfs.append(pd.read_csv(f,encoding = encoding,sep=';'))
 #     concatenated_df   = pd.concat(dfs, ignore_index=True)
 #     return concatenated_df
@@ -198,14 +202,15 @@ def download_if_not_modified_today(path : str, download_command : str) -> None:
 def logformat() -> str: # BUG: [GOV-72] Is it really format string?
 
     """
-    Generate format string for clean notation in log scale: 0.01, 0.1, 1, 10, 100 (strip unnecessary zeros)
+    Generate format string for clean notation in log scale:
+    0.01, 0.1, 1, 10, 100 (strip unnecessary zeros)
 
     Returns:
     --------
         str
             Format string
     """
-    fmt = lambda x, pos: '{:.6f}'.format(x, pos).rstrip('0').rstrip('.')
+    fmt = lambda x: '{:.6f}'.format(x).rstrip('0').rstrip('.')
     return fmt
 
 # -------------------------------------------------------------------------------
@@ -213,16 +218,16 @@ def logformat() -> str: # BUG: [GOV-72] Is it really format string?
 
 
 def plot(
-    plotdf : pd.DataFrame, 
-    y = None, 
-    xlim : tuple =None, 
-    ylim : tuple =None, 
-    fmt=None, 
-    color=None, 
-    logy : bool = False, 
-    xlabel : str = None, 
-    ylabel : str = None, 
-    title : str = None, 
+    plotdf : pd.DataFrame,
+    y = None,
+    xlim : tuple =None,
+    ylim : tuple =None,
+    fmt=None,
+    color=None,
+    logy : bool = False,
+    xlabel : str = None,
+    ylabel : str = None,
+    title : str = None,
     fontsize : int = 8,
     grid : bool =True,
     legendlabels=None,
@@ -240,13 +245,13 @@ def plot(
             Data frame columns
 
         xlim : tuple,
-        ylim : tuple, 
-        fmt, 
-        color, 
-        logy : bool, 
-        xlabel : str, 
-        ylabel : str, 
-        title : str, 
+        ylim : tuple,
+        fmt,
+        color,
+        logy : bool,
+        xlabel : str,
+        ylabel : str,
+        title : str,
         fontsize : int,
         grid : bool
             As in pandas.DataFrame.plot
@@ -256,26 +261,31 @@ def plot(
 
         legendtitle : str
             Legend title for pyplot
-        
+
         xticsrotate : float
 
         Returns:
         --------
         matplotlib.figure.Figure
     """
-    import datetime # Needed if xlim args are of type DateTime
-    
+
     fig, ax = plt.subplots()
-    
+
     dfplotoptions = {}
 
     if color:
         dfplotoptions['color'] = color
     if y:
         dfplotoptions['y'] = y
-    plotdf.plot(ax=ax,logy=logy,grid=grid,fontsize=fontsize, **dfplotoptions) # Perhaps more options can be put to dict
-    
-    
+    plotdf.plot(
+        ax=ax,
+        logy=logy,
+        grid=grid,
+        fontsize=fontsize,
+        **dfplotoptions
+        ) # Perhaps more options can be put to dict
+
+
     ax.set_xlim( xlim )
     ax.set_ylim( ylim )
 
@@ -290,13 +300,13 @@ def plot(
 
     legendparams = {}
     if legendlabels:
-        dict = dict_of(labels=legendlabels)
-        legendparams = {**legendparams, **dict}
+        optdict = dict_of(labels=legendlabels)
+        legendparams = {**legendparams, **optdict}
 
     if legendtitle:
-        dict = dict_of(title = legendtitle)
-        legendparams = {**legendparams, **dict}
-    
+        optdict = dict_of(title = legendtitle)
+        legendparams = {**legendparams, **optdict}
+
     legendparams = set_legend_right(legendparams)
     ax.legend(**legendparams)
 
@@ -313,18 +323,24 @@ def save_fig(figure, img_dir, figname, figfmt) -> None:
     Args:
     -----
         figure
-        
+
         img_dir
-        
+
         figname
-        
+
         figfmt
 
     Returns:
     --------
         None
     """
-    figure.savefig(os.sep.join([img_dir,figname]), format = figfmt, bbox_inches='tight',facecolor='white', transparent=False) 
+    figure.savefig(
+        os.sep.join([img_dir,figname]),
+        format = figfmt,
+        bbox_inches='tight',
+        facecolor='white',
+        transparent=False
+        )
     return
 # -------------------------------------------------------------------------------
 
@@ -391,7 +407,7 @@ def display_all(df) -> None:
 #     legend: str=None
 #     cmap: mpl.colors.LinearSegmentedColormap = mpl.cm.Blues
 #     ylim: tuple=None
-        
+
 # def matplotlib_plot(df, dftrend = None):
 #     fig, ax = plt.subplots()
 #     df.plot(ax=ax)
@@ -416,7 +432,7 @@ def display_all(df) -> None:
 
 # def plot_df(df, plot_options, dftrend=None):
 #     fig, ax = matplotlib_plot(df, dftrend)
-#     if plot_options.ylim: 
+#     if plot_options.ylim:
 # #         print(plot_options.ylim)
 #         ax.set_ylim(plot_options.ylim)
 #     set_matplotlib_plot_options(fig, ax, plot_options, dftrend)
@@ -447,7 +463,7 @@ def display_all(df) -> None:
 #         ax.lines[-3].set_linewidth(4)
 #         ax.lines[-2].set_linewidth(4)
 #         ax.lines[-1].set_linewidth(4)
-#     else:    
+#     else:
 #         ax.lines[-2].set_linewidth(4)
 #         ax.lines[-1].set_linewidth(4)
 #     return
@@ -461,7 +477,7 @@ def display_all(df) -> None:
 #         ax.lines[-1].set_color('green')
 #     else:
 #         ax.lines[-2].set_color('Red')
-#         ax.lines[-1].set_color('limegreen')  
+#         ax.lines[-1].set_color('limegreen')
 #     return
 
 # # https://matplotlib.org/3.3.3/gallery/ticks_and_spines/tick-locators.html
