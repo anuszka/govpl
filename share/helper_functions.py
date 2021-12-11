@@ -219,6 +219,7 @@ def logformat() -> str: # BUG: [GOV-72] Is it really format string?
 
 def plot(
     plotdfs : [pd.DataFrame],
+    x = None,
     y = None,
     xlim : tuple =None,
     ylim : tuple =None,
@@ -240,7 +241,8 @@ def plot(
     Args:
     -----
         plotdf : pandas.DataFrame
-
+        x
+            Data frame columns
         y
             Data frame columns
 
@@ -270,13 +272,16 @@ def plot(
     """
 
     fig, ax = plt.subplots()
-
+   
+        
     dfplotoptions = {}
 
     if color:
         dfplotoptions['color'] = color
     if y:
         dfplotoptions['y'] = y
+    if x:
+        dfplotoptions['x'] = x
 
     for plotdf in plotdfs:
         plotdf.plot(
@@ -286,6 +291,8 @@ def plot(
             fontsize=fontsize,
             **dfplotoptions
             ) # Perhaps more options can be put to dict
+
+    
 
 
     ax.set_xlim( xlim )
@@ -313,6 +320,9 @@ def plot(
     ax.legend(**legendparams)
 
     plt.xticks(rotation=xticsrotate)
+    if x:
+        import numpy as np
+        plt.xticks(np.arange(1, 365, 7))
 
     plt.show()
     figure = ax.figure
