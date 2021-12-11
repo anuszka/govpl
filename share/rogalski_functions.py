@@ -28,6 +28,13 @@ def format_rogalski_voi(df : pd.DataFrame, start_row:int, end_row:int) -> pd.Dat
     dfc = dfc.apply(pd.to_numeric)
     dfc.columns = pd.to_datetime(dfc.columns, format='%d.%m.%Y')
     dfc = dfc.T
+    start_date = pd.to_datetime('2020.01.01')
+    end_date = pd.to_datetime('2020.03.03')
+    dates = pd.date_range(start_date,end_date)
+    df_fill = pd.DataFrame(index = dates, columns=dfc.columns)
+    df_fill=df_fill.fillna(0)
+    dfc = pd.concat([df_fill,dfc])
+
     return dfc
 
 # --------------------------------------------------------------------------
