@@ -282,6 +282,8 @@ def plot(
         dfplotoptions['y'] = y
     if x:
         dfplotoptions['x'] = x
+        
+            
 
     for plotdf in plotdfs:
         plotdf.plot(
@@ -320,9 +322,13 @@ def plot(
     ax.legend(**legendparams)
 
     plt.xticks(rotation=xticsrotate)
+
     if x:
-        import numpy as np
-        plt.xticks(np.arange(1, 365, 7))
+        if isinstance(plotdfs[0][x][0],str): # If x column is str then it is day / week number
+            ax.xaxis.set_minor_locator(mticker.MultipleLocator(base=7))
+            ax.xaxis.set_major_locator(mticker.MultipleLocator(base=28)) # Better set at month, 1st?
+            ticklist = ['0'] + plotdfs[0][x].iloc[0::28].values.tolist()
+            ax.set_xticklabels(ticklist)
 
     plt.show()
     figure = ax.figure
