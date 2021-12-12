@@ -219,6 +219,7 @@ def logformat() -> str: # BUG: [GOV-72] Is it really format string?
 
 def plot(
     plotdfs : [pd.DataFrame],
+    x = None,
     y = None,
     xlim : tuple =None,
     ylim : tuple =None,
@@ -240,7 +241,8 @@ def plot(
     Args:
     -----
         plotdf : pandas.DataFrame
-
+        x
+            Data frame columns
         y
             Data frame columns
 
@@ -270,13 +272,18 @@ def plot(
     """
 
     fig, ax = plt.subplots()
-
+   
+        
     dfplotoptions = {}
 
     if color:
         dfplotoptions['color'] = color
     if y:
         dfplotoptions['y'] = y
+    if x:
+        dfplotoptions['x'] = x
+        
+            
 
     for plotdf in plotdfs:
         plotdf.plot(
@@ -286,6 +293,8 @@ def plot(
             fontsize=fontsize,
             **dfplotoptions
             ) # Perhaps more options can be put to dict
+
+    
 
 
     ax.set_xlim( xlim )
@@ -313,6 +322,13 @@ def plot(
     ax.legend(**legendparams)
 
     plt.xticks(rotation=xticsrotate)
+
+    if x:
+        if isinstance(plotdfs[0][x][0],str): # If x column is str then it is day / week number
+            ax.xaxis.set_minor_locator(mticker.MultipleLocator(base=7))
+            ax.xaxis.set_major_locator(mticker.MultipleLocator(base=28)) # Better set at month, 1st?
+            ticklist = ['0'] + plotdfs[0][x].iloc[0::28].values.tolist()
+            ax.set_xticklabels(ticklist)
 
     plt.show()
     figure = ax.figure
