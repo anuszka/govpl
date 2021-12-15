@@ -10,7 +10,7 @@ hist_to_df: Export numpy.histogram to pandas data frame
 
 import pandas as pd
 import numpy as np
-from loghelpers import *
+from share.loghelpers import *
 
 
 
@@ -27,3 +27,10 @@ def hist_to_df(dfcol, bins, density=True):
     dfh=dfh[reversed(dfh.columns)]
     dfh.columns=['bin_min','value']
     return dfh
+class RawDf:
+    df : pd.DataFrame
+    def __init__(self, df : pd.DataFrame) -> None:
+        self.df=df
+        return
+    def __call__(self):
+        return self.df
