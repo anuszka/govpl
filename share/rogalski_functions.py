@@ -20,7 +20,8 @@ def format_rogalski_voi(df : pd.DataFrame, start_row:int, end_row:int) -> pd.Dat
 
     dfc = df[start_row:end_row].copy(deep=True)
     dfc.iloc[0,1:304] = dfc.iloc[0,1:304] + '.2020'
-    dfc.iloc[0,304:] = dfc.iloc[0,304:] + '.2021'
+    dfc.iloc[0,304:304+365] = dfc.iloc[0,304:304+365] + '.2021'
+    dfc.iloc[0,304+365:] = dfc.iloc[0,304+365:] + '.2022'
     dfc.set_index(dfc.columns[0], inplace=True)
     dfc, dfc.columns = dfc[1:] , dfc.iloc[0]
     dfc.index.name = None
