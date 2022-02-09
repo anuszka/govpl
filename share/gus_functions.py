@@ -120,15 +120,18 @@ class Analysis:
         __init__(params : dict) -> None
             Constructor
 
+        download() -> None
         download_if_no_zipfile() -> None
 
+        unzip() -> None
         unzip_if_not_unzipped() -> None
 
+        convert_to_xls() -> None
         convert_to_xls_if_not_converted() -> None
 
         download_unzip_convert_to_xls() -> None
 
-        read_xls_year(year) -> pandas.DataFrame
+        read_xls_year(year, sex : str) -> pandas.DataFrame
         
         format_df(df : pandas.DataFrame, year : int) -> pandas.DataFrame
 
@@ -141,7 +144,7 @@ class Analysis:
         make_all_years_df() -> None
             Merge GUS data frames for all years
 
-        getdata(self) -> None
+        getdata(self, sex : str) -> None
             Get GUS data, make dict of data frames for each year, and make a single data frame for all years
 
     """
@@ -168,6 +171,21 @@ class Analysis:
         self.params = GUSparams(**params)
         return
     # --------------------------------------------------------------------------
+    def download(self) -> None:
+        """
+        Args:
+        -----
+            None
+
+        Returns:
+        --------
+            None
+
+        """
+        print('Downloading file: ' + self.params.url)
+        getfile(self.params.url,self.params.zipfile_path)
+        return
+    # --------------------------------------------------------------------------
     def download_if_no_zipfile(self) -> None:
         """
         Args:
@@ -186,6 +204,21 @@ class Analysis:
             print(self.params.zipfile_path + ' exists, so not downloaded')
         return    
     # --------------------------------------------------------------------------
+    def unzip(self) -> None:
+        """
+        Args:
+        -----
+            None
+
+        Returns:
+        --------
+            None
+        """
+        
+        print('Unzipping file: ' + self.params.zipfile)
+        unzip(self.params.data_dir,self.params.zipfile)
+        return
+    # --------------------------------------------------------------------------
     def unzip_if_not_unzipped(self) -> None:
         """
         Args:
@@ -202,6 +235,25 @@ class Analysis:
         else:
             print('*.xlsx or *.xls files exist in ' + self.params.zip_dir + ', so zip file not extracted')
         return
+    # --------------------------------------------------------------------------
+    def convert_to_xls(self) -> None:
+        """
+        Args:
+        -----
+            None
+
+        Returns:
+        --------
+            None
+        """
+        print('Converting *.xlsx to *.xls')
+        for year in range(self.params.year_start,self.params.year_end+1):
+            print(year, end=' ')
+            file = self.params.file_prefix_terminal + str(year) + self.params.file_suffix
+            xlsx2xls(self.params.zip_dir,file, self.params.libreoffice_cmd, inplace = True)
+        print()
+        
+        return    
     # --------------------------------------------------------------------------
     def convert_to_xls_if_not_converted(self) -> None:
         """
@@ -235,12 +287,15 @@ class Analysis:
         --------
             None
         """
-        self.download_if_no_zipfile()
-        self.unzip_if_not_unzipped()
-        self.convert_to_xls_if_not_converted()
+        # self.download_if_no_zipfile()
+        # self.unzip_if_not_unzipped()
+        # self.convert_to_xls_if_not_converted()
+        self.download()
+        self.unzip()
+        self.convert_to_xls()
         return
     # --------------------------------------------------------------------------
-    def read_xls_year(self,year : int) -> pandas.DataFrame:
+    def read_xls_year(self,year : int, sex : str = 'OGÓŁEM') -> pandas.DataFrame:
         """
         Read GUS data file (*.xls from excel_file_path) for the specific year
 
@@ -256,7 +311,7 @@ class Analysis:
         excel_file_path = os.sep.join([self.params.zip_dir, self.params.file_prefix + str(year) + '.xls'])
 
         # TODO: [GOV-25] enable reading other sheets, especially the data for genders
-        df = pandas.read_excel(excel_file_path, 'OGÓŁEM')
+        df = pandas.read_excel(excel_file_path, sex)
         
         return df
     # --------------------------------------------------------------------------
@@ -290,7 +345,7 @@ class Analysis:
         return df1
     # ------------------------------------------------------------------------
 
-    def make_year_data_dict(self) -> None:
+    def make_year_data_dict(self, sex = 'OGÓŁEM') -> None:
         """
         Make dictionary of year GUS data frames
 
@@ -306,7 +361,7 @@ class Analysis:
         self.year_data_dict={}
         for year in range(self.params.year_start,self.params.year_end+1):
             print(year, end=' ')
-            df = self.read_xls_year(year)
+            df = self.read_xls_year(year,sex)
             df = self.format_df(df,year)
             if df['Wiek zmarłych w latach'].isnull().values.any():
                 df.drop(index=0, inplace=True)
@@ -331,7 +386,7 @@ class Analysis:
         self.all_years_df=pandas.concat(list(self.year_data_dict.values()), ignore_index=True)
         return
     # --------------------------------------------------------------------------
-    def getdata(self) -> None:
+    def getdata(self, sex : str = 'OGÓŁEM') -> None:
         """
         Get GUS data, make dict of data frames for each year, and make a single data frame for all years
 
@@ -343,6 +398,11 @@ class Analysis:
         --------
             None
         """
+
+        # Gdy plik zip jest w katalogu, to nie wiadomo, czy jest coś downloadowane czy nie
+        # Gdy pliku zip nie ma w katalogu, ale są pliki xls, to plik zip jest downloadowany, 
+        # ale nie jest rozpakowywany!
+
         print('Getting GUS data...')
 
         filepath = os.sep.join([self.params.data_dir,(self.params.file_prefix+'.csv')])
@@ -351,7 +411,7 @@ class Analysis:
             self.all_years_df = pandas.read_csv(filepath)
         else:
             self.download_unzip_convert_to_xls()
-            self.make_year_data_dict()
+            self.make_year_data_dict(sex)
             self.make_all_years_df()
             self.save_csv()
         print('Done.')
