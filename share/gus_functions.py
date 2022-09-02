@@ -290,6 +290,7 @@ class Analysis:
         # self.download_if_no_zipfile()
         # self.unzip_if_not_unzipped()
         # self.convert_to_xls_if_not_converted()
+        # TODO correct existence check
         self.download()
         self.unzip()
         self.convert_to_xls()
